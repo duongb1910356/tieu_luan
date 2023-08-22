@@ -1,5 +1,7 @@
 package com.fitivation_v3.test;
 
+import com.fitivation_v3.exception.AuthorizeException;
+import com.fitivation_v3.exception.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ public class TestController {
   @GetMapping("/user")
   @PreAuthorize("hasRole('ROLE_USER')")
   public String userAccess() {
-    return "ROLE_USER Content";
+    throw new AuthorizeException();
+//    return "ROLE_USER Content";
   }
 }
