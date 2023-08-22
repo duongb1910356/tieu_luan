@@ -1,4 +1,4 @@
-package com.fitivation_v3.security;
+package com.fitivation_v3.security.service;
 
 import com.fitivation_v3.user.User;
 import com.fitivation_v3.user.UserRepository;

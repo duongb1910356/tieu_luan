@@ -1,6 +1,6 @@
 package com.fitivation_v3.security.jwt;
 
-import com.fitivation_v3.security.UserDetailsServiceImpl;
+import com.fitivation_v3.security.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.fitivation_v3.security;
+package com.fitivation_v3.security.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fitivation_v3.user.User;

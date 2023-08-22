@@ -3,13 +3,18 @@ package com.fitivation_v3.auth;
 import com.fitivation_v3.auth.dto.JwtResponseDto;
 import com.fitivation_v3.auth.dto.LoginDto;
 import com.fitivation_v3.auth.dto.SignupDto;
-import com.fitivation_v3.security.UserDetailsImpl;
+import com.fitivation_v3.auth.dto.TokenRefreshRequest;
+import com.fitivation_v3.auth.dto.TokenRefreshResponse;
+import com.fitivation_v3.security.jwt.RefreshToken;
+import com.fitivation_v3.security.service.RefreshTokenService;
+import com.fitivation_v3.security.service.UserDetailsImpl;
 import com.fitivation_v3.security.jwt.JwtUtils;
 import com.fitivation_v3.user.Role;
 import com.fitivation_v3.user.User;
 import com.fitivation_v3.user.UserRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +47,9 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
+  @Autowired
+  RefreshTokenService refreshTokenService;
+
   @GetMapping("/all")
   public String allGetAccess() {
     return "Public auth content";
@@ -63,7 +71,10 @@ public class AuthController {
     List<String> roles = userDetails.getAuthorities().stream()
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
-    return ResponseEntity.ok(new JwtResponseDto(jwt,
+    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+    return ResponseEntity.ok(new JwtResponseDto(
+        jwt,
+        refreshToken.getToken(),
         userDetails.getId(),
         userDetails.getUsername(),
         userDetails.getEmail(),
@@ -90,5 +101,27 @@ public class AuthController {
     user.setRoles(roles);
     userRepository.save(user);
     return ResponseEntity.ok("User registered successfully!");
+  }
+
+  @PostMapping("/refreshtoken")
+  public ResponseEntity<?> refreshtoken(@RequestBody TokenRefreshRequest request) {
+    String requestRefreshToken = request.getRefreshToken();
+    System.out.println("refreshToken: " + requestRefreshToken);
+    Optional<RefreshToken> refr = refreshTokenService.findByToken(requestRefreshToken);
+    System.out.println("Value of refreshtoken: " + refr.get().getUser().getUsername());
+    return refreshTokenService.findByToken(requestRefreshToken)
+        .map(refreshTokenService::verifyExpiration)
+        .map(RefreshToken::getUser)
+        .map(user -> {
+          String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+          return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+        })
+        .orElseThrow(() -> new IllegalArgumentException("Refresh token is not in database!"));
+
+//    String requestRefreshToken = request.getRefreshToken();
+//    System.out.println("refreshToken: " + requestRefreshToken);
+//    Optional<RefreshToken> refr = refreshTokenService.findByToken(requestRefreshToken);
+//    System.out.println("Value of refreshtoken: " + refr.get().getUser().getUsername());
+//    return ResponseEntity.ok("Call refreshtoken");
   }
 }

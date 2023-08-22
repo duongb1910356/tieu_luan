@@ -2,6 +2,7 @@ package com.fitivation_v3.security;
 
 import com.fitivation_v3.security.jwt.AuthEntryPointJwt;
 import com.fitivation_v3.security.jwt.AuthTokenFilter;
+import com.fitivation_v3.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

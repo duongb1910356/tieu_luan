@@ -1,6 +1,6 @@
 package com.fitivation_v3.security.jwt;
 
-import com.fitivation_v3.security.UserDetailsImpl;
+import com.fitivation_v3.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,11 +26,12 @@ public class JwtUtils {
 
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
-    return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(key(), SignatureAlgorithm.HS256)
+    return generateTokenFromUsername(userPrincipal.getUsername());
+  }
+
+  public String generateTokenFromUsername(String username) {
+    return Jwts.builder().setSubject(username).setIssuedAt(new Date())
+        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(key(), SignatureAlgorithm.HS256)
         .compact();
   }
 
