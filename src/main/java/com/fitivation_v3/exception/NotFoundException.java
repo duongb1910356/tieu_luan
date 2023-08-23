@@ -1,7 +1,7 @@
 package com.fitivation_v3.exception;
 
 public class NotFoundException extends RuntimeException {
-  public AuthorizeException() {
+  public NotFoundException() {
     this("Requested resource not found");
   }
 

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
   @Autowired
   AuthenticationManager authenticationManager;
 
@@ -63,7 +64,8 @@ public class AuthController {
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginRequest) {
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+            loginRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
 
@@ -77,16 +79,20 @@ public class AuthController {
         refreshToken.getToken(),
         userDetails.getId(),
         userDetails.getUsername(),
-        userDetails.getEmail(),
-        roles));
+        roles,
+        userDetails.getDisplayName(),
+        userDetails.getAvatar(),
+        userDetails.getBirth(),
+        userDetails.getPhone(),
+        userDetails.getSex()));
   }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@RequestBody SignupDto signUpRequest) {
-    if(userRepository.existsByUsername(signUpRequest.getUsername())) {
+    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest().body("Error: Username is already taken");
     }
-    User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
+    User user = new User(signUpRequest.getUsername(), encoder.encode(signUpRequest.getPassword()));
     Set<String> strRoles = signUpRequest.getRole();
     Set<Role> roles = new HashSet<>();
     strRoles.forEach(role -> {

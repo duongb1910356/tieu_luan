@@ -1,5 +1,7 @@
-package com.fitivation_v3.user;
+package com.fitivation_v3.user.dto;
 
+import com.fitivation_v3.user.Role;
+import com.fitivation_v3.user.Sex;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -8,19 +10,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-@Document(collection = "users")
-public class User {
+@NoArgsConstructor
+public class UserDto {
+
   @Id
   private ObjectId id;
 
   private String username; //email
-  private String password;
   private Set<Role> roles;
 
   private String displayName;
@@ -28,10 +28,4 @@ public class User {
   private Date birth;
   private String phone;
   private Sex sex;
-
-
-  public User(String username, String password){
-    this.username = username;
-    this.password = password;
-  }
 }
