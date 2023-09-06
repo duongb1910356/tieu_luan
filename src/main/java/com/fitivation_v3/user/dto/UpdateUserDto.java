@@ -4,6 +4,7 @@ import com.fitivation_v3.user.Sex;
 import com.mongodb.lang.Nullable;
 import java.util.Date;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UpdateUserDto {
 
   private String displayName;
@@ -19,5 +21,6 @@ public class UpdateUserDto {
   private Date birth;
   private String phone;
   private Sex sex;
+  private String customerIdStripe;
 
 }

@@ -2,8 +2,12 @@ package com.fitivation_v3.files;
 
 import com.fitivation_v3.exception.BadRequestException;
 import com.fitivation_v3.exception.NotFoundException;
+import com.fitivation_v3.shared.ListResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,13 +33,33 @@ public class FileController {
 
   @PostMapping("/upload")
   @PreAuthorize("hasRole('ROLE_USER')")
-  public ResponseEntity<FileData> uploadFileToFileSystem(@RequestParam("image") MultipartFile file)
+  public ResponseEntity<FileData> uploadFileToFileSystem(@RequestParam("image") MultipartFile file,
+      @RequestParam(value = "facilityId", required = false)
+      ObjectId facilityId)
       throws IOException {
-    FileData uploadImage = fileStorageService.uploadImageToFileSystem(file);
+    FileData uploadImage = fileStorageService.uploadImageToFileSystem(file, facilityId);
     if (uploadImage.getId() == null) {
       throw new BadRequestException("Upload image failed");
     } else {
       return new ResponseEntity<>(uploadImage, HttpStatus.OK);
+    }
+  }
+
+  @PostMapping("/upload_bulk")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  public ResponseEntity<ListResponse<FileData>> uploadManyFileToFileSystem(
+      @RequestParam("images") MultipartFile[] files,
+      @RequestParam(value = "facilityId", required = false)
+      ObjectId facilityId)
+      throws IOException {
+    List<FileData> uploadImages = fileStorageService.uploadImagesToFileSystem(files, facilityId);
+    if (uploadImages.isEmpty()) {
+      throw new BadRequestException("Upload image failed");
+    } else {
+      ListResponse<FileData> listResponse = new ListResponse<>();
+      listResponse.setItems(uploadImages);
+      listResponse.setTotals(uploadImages.size());
+      return new ResponseEntity<>(listResponse, HttpStatus.OK);
     }
   }
 

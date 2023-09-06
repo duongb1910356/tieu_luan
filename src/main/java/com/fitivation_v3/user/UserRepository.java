@@ -1,6 +1,5 @@
 package com.fitivation_v3.user;
 
-import com.fitivation_v3.user.dto.UpdateUserDto;
 import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,22 +32,36 @@ public class FileStorageService {
   @Value("http://localhost:8080/api/file/")
   private String URL_ROOT;
 
-  public FileData uploadImageToFileSystem(MultipartFile file) throws IOException {
+  public FileData uploadImageToFileSystem(MultipartFile file, ObjectId facilityId)
+      throws IOException {
     UserDetailsImpl userDetails =
         (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     String uniqueFileName = generateUniqueFileName(
         Objects.requireNonNull(file.getOriginalFilename()));
     String filePath = StringUtils.cleanPath(
         FOLDER_PATH + uniqueFileName);
+
     FileData fileData = fileDataRepository.save(
-        FileData.builder().name(uniqueFileName).type(file.getContentType())
+        FileData.builder().name(uniqueFileName).type(file.getContentType()).facilityId(facilityId)
             .filePath(URL_ROOT + uniqueFileName)
-            .userIdUpload(userDetails.getId().toString()).build());
+            .userIdUpload(userDetails.getId()).build());
+
     if (fileData.getId() != null) {
       file.transferTo(new File(filePath));
       return fileData;
     }
     return null;
+  }
+
+  public List<FileData> uploadImagesToFileSystem(MultipartFile[] files, ObjectId facilityId)
+      throws IOException {
+    List<FileData> uploadedFiles = new ArrayList<>();
+    for (MultipartFile file : files) {
+      FileData fileData = uploadImageToFileSystem(file, facilityId);
+      uploadedFiles.add(fileData);
+    }
+    
+    return uploadedFiles;
   }
 
   public byte[] downloadImageFileSystem(String fileName) throws IOException {

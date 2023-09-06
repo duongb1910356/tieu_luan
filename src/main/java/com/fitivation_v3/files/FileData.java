@@ -22,5 +22,6 @@ public class FileData {
   private String name;
   private String type;
   private String filePath;
-  private String userIdUpload;
+  private ObjectId userIdUpload;
+  private ObjectId facilityId;
 }

@@ -1,5 +1,7 @@
 package com.fitivation_v3.user;
 
+import com.fitivation_v3.address.Address;
+import com.google.gson.annotations.Expose;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -16,11 +18,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "users")
 public class User {
+
   @Id
   private ObjectId id;
 
+  private String customerIdStripe;
+
   private String username; //email
+
+  @Expose
   private String password;
+
   private Set<Role> roles;
 
   private String displayName;
@@ -28,9 +36,9 @@ public class User {
   private Date birth;
   private String phone;
   private Sex sex;
+  private Address address;
 
-
-  public User(String username, String password){
+  public User(String username, String password) {
     this.username = username;
     this.password = password;
   }

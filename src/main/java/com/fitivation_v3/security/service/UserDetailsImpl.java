@@ -1,8 +1,8 @@
 package com.fitivation_v3.security.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fitivation_v3.user.Sex;
 import com.fitivation_v3.user.User;
+import com.google.gson.annotations.Expose;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -18,10 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 public class UserDetailsImpl implements UserDetails {
+
   private static final long serialVersionUID = 1L;
   private ObjectId id;
   private String username;
-  @JsonIgnore
+  @Expose
   private String password;
   private Collection<? extends GrantedAuthority> authorities;
 
@@ -32,7 +33,8 @@ public class UserDetailsImpl implements UserDetails {
   private Sex sex;
 
   public UserDetailsImpl(ObjectId id, String username, String password,
-      Collection<? extends GrantedAuthority> authorities, String displayName, String avatar, Date birth, String phone, Sex sex) {
+      Collection<? extends GrantedAuthority> authorities, String displayName, String avatar,
+      Date birth, String phone, Sex sex) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -83,10 +85,12 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
+    }
     UserDetailsImpl user = (UserDetailsImpl) o;
     return Objects.equals(id, user.id);
   }

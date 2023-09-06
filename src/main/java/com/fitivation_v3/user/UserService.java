@@ -4,6 +4,7 @@ import com.fitivation_v3.exception.BadRequestException;
 import com.fitivation_v3.exception.NotFoundException;
 import com.fitivation_v3.files.FileData;
 import com.fitivation_v3.files.FileStorageService;
+import com.fitivation_v3.security.service.UserDetailsImpl;
 import com.fitivation_v3.user.dto.UpdateUserDto;
 import com.fitivation_v3.user.dto.UserDto;
 import java.io.IOException;
@@ -16,8 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,9 +36,13 @@ public class UserService {
   @Autowired
   private ModelMapper mapper;
 
-  public Optional<UserDto> getUserById(ObjectId id) {
+  public Optional<UserDto> getUserDtoById(ObjectId id) {
     Optional<User> user = userRepository.findById(id);
     return Optional.ofNullable(mapper.map(user, UserDto.class));
+  }
+
+  public Optional<User> getUserById(ObjectId id) {
+    return userRepository.findById(id);
   }
 
   public Boolean updateUserById(ObjectId id, UpdateUserDto updateUserDto) {
@@ -66,13 +70,28 @@ public class UserService {
 
   public UserDto updateUserAvatarById(ObjectId id, MultipartFile file) throws IOException {
     Optional<User> user = userRepository.findById(id);
-    FileData fileData = fileStorageService.uploadImageToFileSystem(file);
+    FileData fileData = fileStorageService.uploadImageToFileSystem(file, null);
     if (user.isPresent()) {
       user.get().setAvatar(fileData.getFilePath());
       userRepository.save(user.get());
       return mapper.map(user, UserDto.class);
     }
     throw new NotFoundException("Not found user to update avatar");
+  }
+
+  public void updateCustomerIdStripe(String customerId) {
+    try {
+      UserDetailsImpl userDetails =
+          (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      User user = mapper.map(userDetails, User.class);
+
+      user.setCustomerIdStripe(customerId);
+
+      userRepository.save(user);
+    } catch (Exception ex) {
+      System.out.println("Error update customer id stripe: " + ex);
+      throw new BadRequestException("Error update customer id stripe");
+    }
   }
 
 }

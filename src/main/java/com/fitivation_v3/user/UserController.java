@@ -1,7 +1,6 @@
 package com.fitivation_v3.user;
 
 import com.fitivation_v3.exception.BadRequestException;
-import com.fitivation_v3.files.FileData;
 import com.fitivation_v3.files.FileStorageService;
 import com.fitivation_v3.user.dto.UpdateUserDto;
 import com.fitivation_v3.user.dto.UserDto;
@@ -39,7 +38,7 @@ public class UserController {
 
   @GetMapping("/{userId}")
   public ResponseEntity<UserDto> getUserById(@PathVariable ObjectId userId) {
-    Optional<UserDto> userDto = userService.getUserById(userId);
+    Optional<UserDto> userDto = userService.getUserDtoById(userId);
     return userDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
         .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
   }
@@ -57,7 +56,7 @@ public class UserController {
   UpdateUserDto updateUserDto) {
     Boolean isUpdate = userService.updateUserById(userId, updateUserDto);
     if (isUpdate) {
-      Optional<UserDto> userDto = userService.getUserById(userId);
+      Optional<UserDto> userDto = userService.getUserDtoById(userId);
       return userDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
           .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }

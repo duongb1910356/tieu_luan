@@ -5,6 +5,7 @@ import com.fitivation_v3.auth.dto.LoginDto;
 import com.fitivation_v3.auth.dto.SignupDto;
 import com.fitivation_v3.auth.dto.TokenRefreshRequest;
 import com.fitivation_v3.auth.dto.TokenRefreshResponse;
+import com.fitivation_v3.cart.CartService;
 import com.fitivation_v3.security.jwt.RefreshToken;
 import com.fitivation_v3.security.service.RefreshTokenService;
 import com.fitivation_v3.security.service.UserDetailsImpl;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,6 +52,12 @@ public class AuthController {
 
   @Autowired
   RefreshTokenService refreshTokenService;
+
+  @Autowired
+  CartService cartService;
+
+  @Autowired
+  private ModelMapper mapper;
 
   @GetMapping("/all")
   public String allGetAccess() {
@@ -105,8 +113,38 @@ public class AuthController {
       }
     });
     user.setRoles(roles);
-    userRepository.save(user);
-    return ResponseEntity.ok("User registered successfully!");
+    user.setPhone(signUpRequest.getPhone());
+    user.setDisplayName(signUpRequest.getDisplayName());
+    
+    user = userRepository.save(user);
+
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(signUpRequest.getUsername(),
+            signUpRequest.getPassword()));
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String jwt = jwtUtils.generateJwtToken(authentication);
+
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    List<String> rolesAuth = userDetails.getAuthorities().stream()
+        .map(item -> item.getAuthority())
+        .collect(Collectors.toList());
+    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+    cartService.createCart();
+
+    return ResponseEntity.ok(new JwtResponseDto(
+        jwt,
+        refreshToken.getToken(),
+        userDetails.getId(),
+        userDetails.getUsername(),
+        rolesAuth,
+        userDetails.getDisplayName(),
+        userDetails.getAvatar(),
+        userDetails.getBirth(),
+        userDetails.getPhone(),
+        userDetails.getSex()));
+
+//    return ResponseEntity.ok("User registered successfully!");
   }
 
   @PostMapping("/refreshtoken")
