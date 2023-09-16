@@ -5,6 +5,7 @@ import com.fitivation_v3.facility.Facility;
 import com.fitivation_v3.facility.FacilityRepository;
 import com.fitivation_v3.package_facility.dto.CreatePackageFacilityDto;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,6 +61,7 @@ public class PackageFacilityService {
       List<PackageFacility> packageFacilities = new ArrayList<>();
       if (facility.isPresent()) {
         packageFacilities = packageFacilityRepository.findByFacility(facility.get());
+        packageFacilities.sort(Comparator.comparing(PackageFacility::getType));
       }
       return packageFacilities;
     } catch (Exception ex) {

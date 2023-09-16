@@ -36,9 +36,16 @@ public class UserController {
     return "Public user content";
   }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<UserDto> getUserById(@PathVariable ObjectId userId) {
-    Optional<UserDto> userDto = userService.getUserDtoById(userId);
+//  @GetMapping("/{userId}")
+//  public ResponseEntity<UserDto> getUserById(@PathVariable ObjectId userId) {
+//    Optional<UserDto> userDto = userService.getUserDtoById(userId);
+//    return userDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+//        .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+//  }
+
+  @GetMapping("/{username}")
+  public ResponseEntity<UserDto> getUserById(@PathVariable String username) {
+    Optional<UserDto> userDto = userService.getUserDtoByUsername(username);
     return userDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
         .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
   }

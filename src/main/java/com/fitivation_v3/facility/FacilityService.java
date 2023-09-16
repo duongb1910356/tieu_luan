@@ -17,7 +17,10 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Field;
+import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.NearQuery;
 import org.springframework.data.mongodb.core.query.Query;
@@ -70,10 +73,19 @@ public class FacilityService {
   public Optional<Facility> getFacilityById(ObjectId facilityId) {
     try {
       if (facilityRepository.existsById(facilityId)) {
-        Optional<Facility> facility = facilityRepository.findById(facilityId);
-        System.out.println("Facility exist: " + facility.isPresent());
-        System.out.println("Facility name: " + facility.get().getName());
-        return facility;
+//        Optional<Facility> facility = facilityRepository.findById(facilityId);
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("_id").is(facilityId)),
+            Aggregation.lookup("files", "_id", "facilityId", "images"),
+            Aggregation.project("_id", "address", "avagerstar", "location", "describe", "name",
+                "phone", "email", "images")
+        );
+        AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
+            Facility.class);
+        Facility facility = results.getMappedResults().get(0);
+
+        return Optional.ofNullable(facility);
       } else {
         return Optional.empty();
       }
@@ -94,8 +106,9 @@ public class FacilityService {
 
       Aggregation aggregation = Aggregation.newAggregation(
           Aggregation.geoNear(nearQuery, "location"),
-          Aggregation.project("_id", "address", "avagerstar", "describe", "name")
-              .and("location").as("distance")
+          Aggregation.lookup("files", "_id", "facilityId", "images"),
+          Aggregation.project("_id", "address", "averageStar", "describe", "name", "images")
+              .and(("location")).as("distance")
       );
       AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
           Facility.class);

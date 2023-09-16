@@ -13,6 +13,8 @@ import com.fitivation_v3.security.jwt.JwtUtils;
 import com.fitivation_v3.user.Role;
 import com.fitivation_v3.user.User;
 import com.fitivation_v3.user.UserRepository;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -71,17 +73,18 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginRequest) {
+    System.out.println("PASSS: " + loginRequest.getPassword());
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
             loginRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
-
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream()
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
     return ResponseEntity.ok(new JwtResponseDto(
         jwt,
         refreshToken.getToken(),
@@ -115,7 +118,7 @@ public class AuthController {
     user.setRoles(roles);
     user.setPhone(signUpRequest.getPhone());
     user.setDisplayName(signUpRequest.getDisplayName());
-    
+
     user = userRepository.save(user);
 
     Authentication authentication = authenticationManager.authenticate(

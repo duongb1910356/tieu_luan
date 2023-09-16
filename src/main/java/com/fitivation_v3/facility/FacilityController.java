@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,9 +37,9 @@ public class FacilityController {
     return new ResponseEntity<>(facilityListResponse, HttpStatus.OK);
   }
 
-  @GetMapping("/get_nearby_facilities/{longtitude}/{latitude}")
-  public ResponseEntity<?> getNearbyFacilities(@PathVariable double longtitude,
-      @PathVariable double latitude) {
+  @GetMapping("/get_nearby_facilities")
+  public ResponseEntity<?> getNearbyFacilities(@RequestParam("longtitude") double longtitude,
+      @RequestParam("latitude") double latitude) {
     List<Facility> facilities = facilityService.getNearbyFacilities(longtitude, latitude);
     ListResponse<Facility> facilityListResponse = new ListResponse<>();
     facilityListResponse.setItems(facilities);

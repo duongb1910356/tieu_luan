@@ -1,5 +1,7 @@
 package com.fitivation_v3.review;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.files.FileData;
 import com.fitivation_v3.user.User;
 import java.util.List;
@@ -20,11 +22,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Review {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
   @DBRef
   private User author;
 
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId facilityId;
   private String comment;
   private int rate;

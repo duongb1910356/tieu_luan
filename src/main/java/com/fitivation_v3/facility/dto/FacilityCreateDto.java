@@ -7,12 +7,14 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class FacilityCreateDto {
 
   private Address address;

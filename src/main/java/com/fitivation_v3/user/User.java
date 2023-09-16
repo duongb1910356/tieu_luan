@@ -1,7 +1,9 @@
 package com.fitivation_v3.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fitivation_v3.address.Address;
-import com.google.gson.annotations.Expose;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -20,13 +22,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
   private String customerIdStripe;
 
   private String username; //email
 
-  @Expose
+  @JsonIgnore
   private String password;
 
   private Set<Role> roles;

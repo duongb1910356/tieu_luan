@@ -1,5 +1,7 @@
 package com.fitivation_v3.files;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +20,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class FileData {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
   private String name;
   private String type;
   private String filePath;
+  
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId userIdUpload;
+
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId facilityId;
 }

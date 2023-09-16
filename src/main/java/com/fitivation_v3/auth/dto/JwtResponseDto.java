@@ -1,5 +1,7 @@
 package com.fitivation_v3.auth.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.user.Sex;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,10 @@ public class JwtResponseDto {
 
   private String accessToken;
   private String type = "Bearer";
+
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
+
   private String username;
   private List<String> roles;
   private String refreshToken;

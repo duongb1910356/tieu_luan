@@ -1,5 +1,7 @@
 package com.fitivation_v3.cart_item;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.package_facility.PackageFacility;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Item {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
   @DBRef

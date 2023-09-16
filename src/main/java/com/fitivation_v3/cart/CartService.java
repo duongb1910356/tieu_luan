@@ -46,6 +46,7 @@ public class CartService {
 
     Cart cart = cartRepository.findCartByUser(user);
     cart.getTotalPrice();
+    cart.getOriginPrice();
 
     return cart;
   }

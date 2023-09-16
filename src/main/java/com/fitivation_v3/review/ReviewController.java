@@ -1,6 +1,7 @@
 package com.fitivation_v3.review;
 
 import com.fitivation_v3.review.dto.ReviewCreateDto;
+import com.fitivation_v3.review.dto.ReviewSummary;
 import com.fitivation_v3.shared.ListResponse;
 import java.io.IOException;
 import java.util.List;
@@ -47,5 +48,13 @@ public class ReviewController {
     listResponse.setItems(reviews);
     listResponse.setTotals(reviews.size());
     return new ResponseEntity<>(listResponse, HttpStatus.OK);
+  }
+
+  @GetMapping("/facility/summary/{facilityId}")
+  public ResponseEntity<?> getReviewSummaryByFacilityId(
+      @PathVariable ObjectId facilityId) {
+    List<ReviewSummary> reviewSummaries = reviewService.getReviewSummaryByFacilityId(facilityId);
+
+    return new ResponseEntity<>(reviewSummaries, HttpStatus.OK);
   }
 }

@@ -1,6 +1,10 @@
 package com.fitivation_v3.facility;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fitivation_v3.address.Address;
+import com.fitivation_v3.config.ObjectIdSerializer;
+import com.fitivation_v3.files.FileData;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +26,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Facility {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId ownerId;
 
   private Address address;
@@ -41,4 +47,5 @@ public class Facility {
   private String phone;
   private String email;
   private double distance;
+  private List<FileData> images;
 }

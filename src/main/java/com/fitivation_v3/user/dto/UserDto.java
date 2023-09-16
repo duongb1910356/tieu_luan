@@ -1,5 +1,7 @@
 package com.fitivation_v3.user.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.user.Role;
 import com.fitivation_v3.user.Sex;
 import java.util.Date;
@@ -18,6 +20,7 @@ import org.springframework.data.annotation.Id;
 public class UserDto {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
   private String username; //email

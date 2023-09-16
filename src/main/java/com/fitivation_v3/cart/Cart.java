@@ -1,6 +1,8 @@
 package com.fitivation_v3.cart;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fitivation_v3.cart_item.Item;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.package_facility.PackageFacility;
 import com.fitivation_v3.user.User;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Cart {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
   @DBRef
@@ -38,15 +41,30 @@ public class Cart {
   @Transient
   private double totalPrice;
 
+  @Transient
+  private double originPrice;
+
   public double getTotalPrice() {
-    double total = 0;
+    double sum = 0;
     for (Item item : items) {
       PackageFacility packageItem = item.getPackageFacility();
-      total += item.getQuantity() * (1 - packageItem.getDiscount()) * packageItem.getBasePrice();
+      sum += item.getQuantity() * (1 - packageItem.getDiscount()) * packageItem.getBasePrice()
+          * packageItem.getType();
     }
-    totalPrice = total;
+    totalPrice = sum;
 
     return totalPrice;
+  }
+
+  public double getOriginPrice() {
+    double sum = 0;
+    for (Item item : items) {
+      PackageFacility packageItem = item.getPackageFacility();
+      sum += item.getQuantity() * packageItem.getBasePrice() + packageItem.getType();
+    }
+    originPrice = sum;
+
+    return originPrice;
   }
 
   public void addItemToCart(Item item) {

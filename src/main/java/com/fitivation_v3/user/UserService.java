@@ -41,6 +41,11 @@ public class UserService {
     return Optional.ofNullable(mapper.map(user, UserDto.class));
   }
 
+  public Optional<UserDto> getUserDtoByUsername(String username) {
+    Optional<User> user = userRepository.findByUsername(username);
+    return Optional.ofNullable(mapper.map(user, UserDto.class));
+  }
+
   public Optional<User> getUserById(ObjectId id) {
     return userRepository.findById(id);
   }
@@ -67,6 +72,7 @@ public class UserService {
     }
     return false;
   }
+
 
   public UserDto updateUserAvatarById(ObjectId id, MultipartFile file) throws IOException {
     Optional<User> user = userRepository.findById(id);

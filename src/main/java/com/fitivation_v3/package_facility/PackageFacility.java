@@ -1,5 +1,7 @@
 package com.fitivation_v3.package_facility;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fitivation_v3.config.ObjectIdSerializer;
 import com.fitivation_v3.facility.Facility;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class PackageFacility {
 
   @Id
+  @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
   private String name;
   private int basePrice;

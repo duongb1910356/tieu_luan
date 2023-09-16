@@ -6,6 +6,7 @@ import com.fitivation_v3.facility.FacilityRepository;
 import com.fitivation_v3.files.FileData;
 import com.fitivation_v3.files.FileStorageService;
 import com.fitivation_v3.review.dto.ReviewCreateDto;
+import com.fitivation_v3.review.dto.ReviewSummary;
 import com.fitivation_v3.security.service.UserDetailsImpl;
 import com.fitivation_v3.user.User;
 import java.io.IOException;
@@ -17,9 +18,11 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -125,5 +128,53 @@ public class ReviewService {
       return (float) (Math.round(averageRate * 10.0) / 10.0);
     }
     return 0.0F;
+  }
+
+  public List<ReviewSummary> getReviewSummaryByFacilityId(ObjectId facilityId) {
+    try {
+      int[] ratings = {1, 2, 3, 4, 5};
+      long total = 0;
+
+      Aggregation aggregation = Aggregation.newAggregation(
+          Aggregation.match(Criteria.where("facilityId").is(facilityId)),
+          Aggregation.group("rate").count().as("count"),
+          Aggregation.project(Fields.from(
+              Fields.field("rate", "_id"),
+              Fields.field("count", "count")
+          ))
+      );
+
+      AggregationResults<ReviewSummary> results = mongoTemplate.aggregate(aggregation, Review.class,
+          ReviewSummary.class);
+
+      List<ReviewSummary> summaries = new ArrayList<>(results.getMappedResults());
+      for (ReviewSummary summary : summaries) {
+        total += summary.getCount();
+      }
+
+      for (int rating : ratings) {
+        boolean exists = false;
+        for (ReviewSummary summary : summaries) {
+          if (summary.getRate() == rating) {
+            System.out.println("sum: " + summary.getRate());
+            summary.setPercent((float) summary.getCount() / total * 100);
+            summary.setTotal(total);
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          summaries.add(new ReviewSummary(rating, 0L, 0F, total));
+          System.out.println("da them");
+        }
+      }
+
+      summaries.sort((a, b) -> Integer.compare(a.getRate(), b.getRate()));
+
+      return summaries;
+    } catch (Exception ex) {
+      System.out.println("Error summary review: " + ex);
+      throw new BadRequestException("Error summary review");
+    }
   }
 }
