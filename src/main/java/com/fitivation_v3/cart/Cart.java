@@ -44,7 +44,7 @@ public class Cart {
   @Transient
   private double originPrice;
 
-  public double getTotalPrice() {
+  public double caculateTotalPrice() {
     double sum = 0;
     for (Item item : items) {
       PackageFacility packageItem = item.getPackageFacility();
@@ -56,14 +56,13 @@ public class Cart {
     return totalPrice;
   }
 
-  public double getOriginPrice() {
+  public double caculateOriginPrice() {
     double sum = 0;
     for (Item item : items) {
       PackageFacility packageItem = item.getPackageFacility();
-      sum += item.getQuantity() * packageItem.getBasePrice() + packageItem.getType();
+      sum += (packageItem.getBasePrice() * packageItem.getType());
     }
-    originPrice = sum;
-
+    setOriginPrice(sum);
     return originPrice;
   }
 

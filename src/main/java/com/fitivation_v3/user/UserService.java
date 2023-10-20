@@ -50,6 +50,10 @@ public class UserService {
     return userRepository.findById(id);
   }
 
+  public Optional<User> getUserByCustomerIdStripe(String customerId) {
+    return userRepository.findByCustomerIdStripe(customerId);
+  }
+
   public Boolean updateUserById(ObjectId id, UpdateUserDto updateUserDto) {
     Query query = new Query(Criteria.where("_id").is(id));
     Update update = new Update();

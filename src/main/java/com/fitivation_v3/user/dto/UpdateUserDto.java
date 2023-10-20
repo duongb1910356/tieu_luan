@@ -22,5 +22,6 @@ public class UpdateUserDto {
   private String phone;
   private Sex sex;
   private String customerIdStripe;
+  private String accountIdStripe;
 
 }

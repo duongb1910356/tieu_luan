@@ -47,7 +47,12 @@ public class FacilityController {
 
     return new ResponseEntity<>(facilityListResponse, HttpStatus.OK);
 
-//    return new ResponseEntity<>("sdgsgdg", HttpStatus.OK);
+  }
+
+  @GetMapping("/owner/{ownerId}")
+  public ResponseEntity<?> getFacilitesByOwnerId(@PathVariable ObjectId ownerId) {
+    List<Facility> facilities = facilityService.getFacilitiesByOwnerId(ownerId);
+    return new ResponseEntity<>(facilities, HttpStatus.OK);
   }
 
   @GetMapping("/{facilityId}")

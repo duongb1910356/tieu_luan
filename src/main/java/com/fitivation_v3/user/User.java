@@ -26,6 +26,7 @@ public class User {
   private ObjectId id;
 
   private String customerIdStripe;
+  private String accountIdStripe;
 
   private String username; //email
 

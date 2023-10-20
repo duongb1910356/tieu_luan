@@ -37,4 +37,11 @@ public class CartController {
     Cart cart = cartService.deleteItemFromCart(itemId);
     return new ResponseEntity<>(cart, HttpStatus.OK);
   }
+
+  @PatchMapping("/delete_all_item")
+  public ResponseEntity<?> deleteAllItemFromCart() {
+    System.out.println("da vo all");
+    Cart cart = cartService.deleteAllItemOfCart();
+    return new ResponseEntity<>(cart, HttpStatus.OK);
+  }
 }

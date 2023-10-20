@@ -23,6 +23,10 @@ public class UserDto {
   @JsonSerialize(using = ObjectIdSerializer.class)
   private ObjectId id;
 
+  private String customerIdStripe;
+  private String accountIdStripe;
+
+
   private String username; //email
   private Set<Role> roles;
 

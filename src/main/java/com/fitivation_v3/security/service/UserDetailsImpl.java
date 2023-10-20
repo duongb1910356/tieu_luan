@@ -31,10 +31,11 @@ public class UserDetailsImpl implements UserDetails {
   private Date birth;
   private String phone;
   private Sex sex;
+  private String customerIdStripe;
 
   public UserDetailsImpl(ObjectId id, String username, String password,
       Collection<? extends GrantedAuthority> authorities, String displayName, String avatar,
-      Date birth, String phone, Sex sex) {
+      Date birth, String phone, Sex sex, String customerIdStripe) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -44,6 +45,7 @@ public class UserDetailsImpl implements UserDetails {
     this.birth = birth;
     this.phone = phone;
     this.sex = sex;
+    this.customerIdStripe = customerIdStripe;
   }
 
   public static UserDetailsImpl build(User user) {
@@ -60,7 +62,7 @@ public class UserDetailsImpl implements UserDetails {
         user.getAvatar(),
         user.getBirth(),
         user.getPhone(),
-        user.getSex());
+        user.getSex(), user.getCustomerIdStripe());
   }
 
   @Override

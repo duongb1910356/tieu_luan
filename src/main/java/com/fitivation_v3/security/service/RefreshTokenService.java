@@ -14,8 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RefreshTokenService {
-  @Value("${bezkoder.app.jwtRefreshExpirationMs}")
-  private Long refreshTokenDurationMs;
+
+  @Value("${bezkoder.app.jwtRefreshExpirationSc}")
+  private Long refreshTokenDurationSc;
 
   @Autowired
   private RefreshTokenRepository refreshTokenRepository;
@@ -30,7 +31,7 @@ public class RefreshTokenService {
   public RefreshToken createRefreshToken(ObjectId userId) {
     RefreshToken refreshToken = new RefreshToken();
     refreshToken.setUser(userRepository.findById(userId).get());
-    refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+    refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenDurationSc));
     refreshToken.setToken(UUID.randomUUID().toString());
 
     refreshToken = refreshTokenRepository.save(refreshToken);
@@ -38,11 +39,12 @@ public class RefreshTokenService {
   }
 
   public RefreshToken verifyExpiration(RefreshToken token) throws IllegalArgumentException {
-    if(token.getExpiryDate().compareTo(Instant.now()) < 0) {
+    if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
       System.out.println("da chay toi day");
       refreshTokenRepository.delete(token);
       System.out.println("da qua day");
-      throw new IllegalArgumentException("Refresh token was expired. Please make a new signin request");
+      throw new IllegalArgumentException(
+          "Refresh token was expired. Please make a new signin request");
     }
 
     return token;

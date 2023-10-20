@@ -17,6 +17,8 @@ public interface FacilityRepository extends MongoRepository<Facility, ObjectId> 
 
   List<Facility> findByLocationNear(Point location, Distance distance);
 
+  List<Facility> findByOwnerId(ObjectId ownerId);
+
   @Query("{'slugAddress': {$regex: ?0, $options: 'i'}}")
   List<Facility> searchBySlugAddress(String textSearch);
 }

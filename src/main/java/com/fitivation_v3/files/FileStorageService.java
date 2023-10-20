@@ -29,7 +29,7 @@ public class FileStorageService {
   @Value("${app.rootDirectory}/files/")
   private String FOLDER_PATH;
 
-  @Value("http://localhost:8080/api/file/")
+  @Value("http://10.2.61.136:8080/api/file/")
   private String URL_ROOT;
 
   public FileData uploadImageToFileSystem(MultipartFile file, ObjectId facilityId)
@@ -60,7 +60,7 @@ public class FileStorageService {
       FileData fileData = uploadImageToFileSystem(file, facilityId);
       uploadedFiles.add(fileData);
     }
-    
+
     return uploadedFiles;
   }
 

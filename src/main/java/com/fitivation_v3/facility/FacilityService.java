@@ -79,6 +79,7 @@ public class FacilityService {
             Aggregation.match(Criteria.where("_id").is(facilityId)),
             Aggregation.lookup("files", "_id", "facilityId", "images"),
             Aggregation.project("_id", "address", "avagerstar", "location", "describe", "name",
+                "ownerId",
                 "phone", "email", "images")
         );
         AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
@@ -131,5 +132,26 @@ public class FacilityService {
     return mongoTemplate.find(query, Facility.class);
 //    return facilityRepository.searchBySlugAddress(searchSlugAddress);
 
+  }
+
+  public List<Facility> getFacilitiesByOwnerId(ObjectId ownerId) {
+    try {
+
+      Aggregation aggregation = Aggregation.newAggregation(
+          Aggregation.match(Criteria.where("ownerId").is(ownerId)),
+          Aggregation.lookup("files", "_id", "facilityId", "images"),
+          Aggregation.project("_id", "ownerId", "address", "avagerstar", "location", "describe",
+              "name",
+              "phone", "email", "images")
+      );
+      AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
+          Facility.class);
+      List<Facility> facilities = results.getMappedResults();
+
+      return facilities;
+
+    } catch (Exception ex) {
+      throw new BadRequestException("Can't retrieve facilities of ownerId: " + ex);
+    }
   }
 }
