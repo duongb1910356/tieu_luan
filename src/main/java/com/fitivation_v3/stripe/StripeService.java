@@ -303,7 +303,8 @@ public class StripeService {
     }
   }
 
-  public PaymentIntent createPaymentIntent(long amount, String currency, String customerId)
+  public PaymentIntent createPaymentIntent(long amount, String currency, String customerId,
+      String timeRegister)
       throws StripeException {
     String ephemeralKey = createEphemeralKey(customerId);
 
@@ -317,14 +318,13 @@ public class StripeService {
     PaymentIntent paymentIntent = PaymentIntent.create(params);
 
     //Tao bill voi status false
-    System.out.println("Goi tao bill");
     Cart cart = cartService.getCartOfMe();
     String paymentIntentId = paymentIntent.getId();
     UserDetailsImpl userDetails =
         (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     User user = mapper.map(userDetails, User.class);
 
-    billService.createBillFromCart(cart, paymentIntentId, user);
+    billService.createBillFromCart(cart, paymentIntentId, user, timeRegister);
 
     return paymentIntent;
   }
@@ -422,7 +422,9 @@ public class StripeService {
 //          .map(rate -> rate.getRate())
 //          .orElse(0.0);
 
-      long vndAmount = (long) (amount / 17000);
+      long vndAmount = (long) (amount / 18000);
+
+      System.out.println("da tra tien la: " + vndAmount);
 
       TransferCreateParams params =
           TransferCreateParams.builder()

@@ -4,8 +4,12 @@ import com.fitivation_v3.exception.BadRequestException;
 import com.fitivation_v3.exception.NotFoundException;
 import com.fitivation_v3.facility.dto.FacilityCreateDto;
 import com.fitivation_v3.security.service.UserDetailsImpl;
+import com.fitivation_v3.subscription.SubscriptionRepository;
+import com.fitivation_v3.user.User;
 import com.fitivation_v3.user.UserRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -37,10 +41,14 @@ public class FacilityService {
   private UserRepository userRepository;
 
   @Autowired
+  private SubscriptionRepository subscriptionRepository;
+
+  @Autowired
   private ModelMapper mapper;
 
   @Autowired
   private MongoTemplate mongoTemplate;
+
 
   public Facility createFacility(FacilityCreateDto facilityCreateDto) {
     try {
@@ -95,6 +103,32 @@ public class FacilityService {
     }
   }
 
+  public Optional<Facility> deleteFacilityById(ObjectId facilityId) {
+    try {
+      if (facilityRepository.existsById(facilityId)) {
+
+//        Aggregation aggregation = Aggregation.newAggregation(
+//            Aggregation.match(Criteria.where("_id").is(facilityId)),
+//            Aggregation.lookup("files", "_id", "facilityId", "images"),
+//            Aggregation.project("_id", "address", "avagerstar", "location", "describe", "name",
+//                "ownerId",
+//                "phone", "email", "images")
+//        );
+//        AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
+//            Facility.class);
+//        Facility facility = results.getMappedResults().get(0);
+        Optional<Facility> facility = facilityRepository.findById(facilityId);
+        facilityRepository.deleteById(facilityId);
+
+        return facility;
+      } else {
+        return Optional.empty();
+      }
+    } catch (Exception ex) {
+      throw new BadRequestException("Can't retrieve facility: " + ex);
+    }
+  }
+
   public List<Facility> getNearbyFacilities(double longtitude, double latitude) {
     try {
       double maxDistanceKm = 5;
@@ -108,7 +142,7 @@ public class FacilityService {
       Aggregation aggregation = Aggregation.newAggregation(
           Aggregation.geoNear(nearQuery, "location"),
           Aggregation.lookup("files", "_id", "facilityId", "images"),
-          Aggregation.project("_id", "address", "averageStar", "describe", "name", "images")
+          Aggregation.project("_id", "address", "avagerstar", "describe", "name", "images")
               .and(("location")).as("distance")
       );
       AggregationResults<Facility> results = mongoTemplate.aggregate(aggregation, "facilities",
@@ -153,5 +187,21 @@ public class FacilityService {
     } catch (Exception ex) {
       throw new BadRequestException("Can't retrieve facilities of ownerId: " + ex);
     }
+  }
+
+  public Map<String, Long> getSubscriptionsCountByFacilityOwnedByUser() {
+    UserDetailsImpl userDetails =
+        (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    User user = mapper.map(userDetails, User.class);
+    Map<String, Long> facilitySubscriptionCount = new HashMap<>();
+    List<Facility> facilities = getFacilitiesByOwnerId(user.getId());
+
+    for (Facility facility : facilities) {
+      System.out.println("facilityid la " + facility.getId());
+      Long count = subscriptionRepository.countByFacilityId(facility.getId());
+      facilitySubscriptionCount.put(facility.getName(), count);
+    }
+
+    return facilitySubscriptionCount;
   }
 }

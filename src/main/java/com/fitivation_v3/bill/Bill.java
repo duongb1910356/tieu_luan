@@ -41,6 +41,7 @@ public class Bill {
   private Item item;
   private double totalPrice;
   private boolean status = false;
+  private String timeRegister;
 
   @CreatedDate
   private Date dateCreated;
@@ -57,14 +58,15 @@ public class Bill {
     return totalPrice;
   }
 
-  public static Bill createBillFromCart(Cart cart, String paymentIntent, User user) {
+  public static Bill createBillFromCart(Cart cart, String paymentIntent, User user,
+      String timeRegister) {
     System.out.println(
         "ownerId " + cart.getItems().get(0).getPackageFacility().getFacility().getOwnerId());
     Bill bill = Bill.builder().customerIdStripe(user.getCustomerIdStripe())
         .paymentIntent(paymentIntent).item(cart.getItems().get(0)).totalPrice(cart.getTotalPrice())
         .ownerId(cart.getItems().get(0).getPackageFacility().getFacility().getOwnerId())
         .customerIdStripe(user.getCustomerIdStripe())
-        .status(false).build();
+        .status(false).timeRegister(timeRegister).build();
 
     return bill;
   }

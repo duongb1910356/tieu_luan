@@ -34,7 +34,12 @@ public class Subscription {
   @DBRef
   private PackageFacility packageFacility;
 
+  private String timeRegister;
+
   private Date expireDay;
+
+  @JsonSerialize(using = ObjectIdSerializer.class)
+  private ObjectId facilityId;
 
   void caclutateExpireDay() {
     Calendar calendar = Calendar.getInstance();

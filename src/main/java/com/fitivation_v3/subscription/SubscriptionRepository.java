@@ -11,4 +11,6 @@ public interface SubscriptionRepository extends MongoRepository<Subscription, Ob
 
   public List<Subscription> findByUser(User user);
 
+  public Long countByFacilityId(ObjectId facilityId);
+
 }

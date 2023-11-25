@@ -42,10 +42,11 @@ public class BillService {
     }
   }
 
-  public Bill createBillFromCart(Cart cart, String paymentIntentId, User user) {
+  public Bill createBillFromCart(Cart cart, String paymentIntentId, User user,
+      String timeRegister) {
     try {
 
-      Bill bill = Bill.createBillFromCart(cart, paymentIntentId, user);
+      Bill bill = Bill.createBillFromCart(cart, paymentIntentId, user, timeRegister);
       return billRepository.save(bill);
     } catch (Exception ex) {
       System.out.println("Can not bill created: " + ex);
@@ -95,6 +96,7 @@ public class BillService {
         Date endDate = calendar.getTime();
         calendar.add(Calendar.MONDAY, -1);
         Date startDate = calendar.getTime();
+        System.out.println("start date " + startDate + ", end date " + endDate);
 
         List<Bill> bills = billRepository.findByOwnerIdAndDateCreatedBetween(user.getId(),
             startDate, endDate);

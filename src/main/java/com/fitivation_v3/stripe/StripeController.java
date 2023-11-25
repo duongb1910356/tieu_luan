@@ -95,10 +95,12 @@ public class StripeController {
 
   @PostMapping("/create_payment_intent")
   public ResponseEntity<?> createPaymentIntent(@RequestParam long amount,
-      @RequestParam String currency, @RequestParam String customerId) {
+      @RequestParam String currency, @RequestParam String customerId,
+      @RequestParam String timeRegister) {
     System.out.println("amout " + amount + ", " + currency);
     try {
-      PaymentIntent paymentIntent = stripeService.createPaymentIntent(amount, currency, customerId);
+      PaymentIntent paymentIntent = stripeService.createPaymentIntent(amount, currency, customerId,
+          timeRegister);
       Gson gson = new Gson();
       String paymentIntentJson = gson.toJson(paymentIntent);
 
